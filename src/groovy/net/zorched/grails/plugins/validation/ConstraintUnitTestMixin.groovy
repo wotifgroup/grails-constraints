@@ -8,6 +8,7 @@ class ConstraintUnitTestMixin extends GrailsUnitTestMixin {
     def params = [:]
     def constraintOwningClass = null
     def constraintPropertyName = null
+    boolean veto = false
 
     def <T> T testFor(Class<T> constraintClass) {
         return this.mockConstraint(constraintClass)
@@ -28,5 +29,6 @@ class ConstraintUnitTestMixin extends GrailsUnitTestMixin {
         this.params = [:]
         this.constraintOwningClass = null
         this.constraintPropertyName = null
+        this.veto = false
     }
 }

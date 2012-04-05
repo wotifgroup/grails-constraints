@@ -30,4 +30,16 @@ class MockConstraintApi implements ConstraintApi {
     String getConstraintPropertyName(Object instance) {
         return this.owner.constraintPropertyName ?: null
     }
+
+    @Override
+    boolean getVeto(Object instance) {
+        return this.owner.veto
+    }
+
+    @Override
+    void setVeto(Object instance, boolean val) {
+        this.owner.veto = val
+    }
+
+
 }

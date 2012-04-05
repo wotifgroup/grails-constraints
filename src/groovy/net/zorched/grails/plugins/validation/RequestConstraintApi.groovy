@@ -13,6 +13,7 @@ import org.hibernate.SessionFactory
  */
 class RequestConstraintApi implements ConstraintApi, GrailsApplicationAware {
     public static String CONSTRAINT_REQUEST_ATTRIBUTE = "grails-constraints_constraint"
+    public static String VETO_REQUEST_ATTRIBUTE = "grails-constraints_veto"
 
     GrailsApplication grailsApplication
 
@@ -38,6 +39,16 @@ class RequestConstraintApi implements ConstraintApi, GrailsApplicationAware {
     @Override
     String getConstraintPropertyName(Object instance) {
         return constraint.propertyName
+    }
+
+    @Override
+    boolean getVeto(Object instance) {
+        return RequestContextHolder.currentRequestAttributes().getAttribute(VETO_REQUEST_ATTRIBUTE, 0) ?: false
+    }
+
+    @Override
+    void setVeto(Object instance, boolean val) {
+        RequestContextHolder.currentRequestAttributes().SetAttribute(VETO_REQUEST_ATTRIBUTE, val, 0)
     }
 
     CustomConstraintFactory.CustomConstraintClass getConstraint() {
