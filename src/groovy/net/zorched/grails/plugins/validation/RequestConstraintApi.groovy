@@ -48,7 +48,7 @@ class RequestConstraintApi implements ConstraintApi, GrailsApplicationAware {
 
     @Override
     void setVeto(Object instance, boolean val) {
-        RequestContextHolder.currentRequestAttributes().SetAttribute(VETO_REQUEST_ATTRIBUTE, val, 0)
+        RequestContextHolder.currentRequestAttributes().setAttribute(VETO_REQUEST_ATTRIBUTE, val, 0)
     }
 
     CustomConstraintFactory.CustomConstraintClass getConstraint() {
