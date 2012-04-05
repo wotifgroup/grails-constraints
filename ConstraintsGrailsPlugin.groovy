@@ -23,6 +23,8 @@ import net.zorched.constraints.UsPhoneConstraint
 import net.zorched.constraints.SsnConstraint
 import net.zorched.constraints.ComparisonConstraint
 import net.zorched.grails.plugins.validation.CustomConstraintFactory
+import net.zorched.grails.plugins.validation.RequestConstraintApi
+import org.codehaus.groovy.grails.commons.metaclass.MetaClassEnhancer
 
 class ConstraintsGrailsPlugin {
     // the plugin version
@@ -82,12 +84,18 @@ class ConstraintsGrailsPlugin {
             configureConstraintBeans.delegate = delegate
             configureConstraintBeans(constraintClass)
         }
+
+        "requestConstraintApiInstance" (RequestConstraintApi)
     }
 
     def doWithDynamicMethods = { applicationContext ->
-        // TODO Implement registering dynamic methods to classes (optional)
+        MetaClassEnhancer enhancer = new MetaClassEnhancer()
+        RequestConstraintApi api = applicationContext.requestConstraintApiInstance
+        enhancer.addApi(api)
+
         application.constraintClasses.each {constraintClass ->
-            setupConstraintProperties(constraintClass)
+            MetaClass mc = constraintClass.clazz.metaClass
+            enhancer.enhance(mc)
 
             registerConstraint(applicationContext, constraintClass)
         }
@@ -101,7 +109,12 @@ class ConstraintsGrailsPlugin {
 
         if (application.isArtefactOfType(ConstraintArtefactHandler.TYPE, event.source)) {
             def artefactClass = application.addArtefact(ConstraintArtefactHandler.TYPE, event.source)
-            setupConstraintProperties(artefactClass)
+
+            MetaClass mc = artefactClass.clazz.metaClass
+
+            MetaClassEnhancer enhancer = new MetaClassEnhancer()
+            enhancer.addApi(event.ctx.requestConstraintApiInstance)
+            enhancer.enhance(mc)
 
             registerConstraint(event.ctx, artefactClass)
         }
@@ -127,25 +140,8 @@ class ConstraintsGrailsPlugin {
     }
 
     /**
-     * Setup properties on the custom Constraints to make extra information available to them
+     * Register the Custom constraint with ConstrainedProperty. Manages creating them with a CustomConstraintFactory
      */
-    def setupConstraintProperties = { constraintClass ->
-        Object params = null
-        Object hibernateTemplate = null
-        Object constraintOwningClass = null
-        String constraintPropertyName = null
-        constraintClass.clazz.metaClass {
-            setParams = {val -> params = val}
-            getParams = {-> return params}
-            setHibernateTemplate = {val -> hibernateTemplate = val}
-            getHibernateTemplate = {-> return hibernateTemplate}
-            setConstraintOwningClass = {val -> constraintOwningClass = val}
-            getConstraintOwningClass = {-> return constraintOwningClass}
-            setConstraintPropertyName = {val -> constraintPropertyName = val}
-            getConstraintPropertyName = {-> return constraintPropertyName}
-        }
-    }
-
     static void registerConstraint(ctx, constraintClass) {
         def constraintName = constraintClass.name
 
