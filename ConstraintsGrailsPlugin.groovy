@@ -28,7 +28,7 @@ import org.codehaus.groovy.grails.commons.metaclass.MetaClassEnhancer
 
 class ConstraintsGrailsPlugin {
     // the plugin version
-    def version = "0.8.0"
+    def version = "0.8.0_wotif.2012.04.05"
 
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0 > *"
